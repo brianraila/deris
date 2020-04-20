@@ -1,19 +1,33 @@
-//BEWARE. THIS IS AN EXPERIMENT. BUT IT WORKS
-
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 import { connect } from "https://denopkg.com/keroxp/deno-redis/mod.ts";
 
-let hostname = "127.0.0.1";
-let port:number = 6379;
 
-// Initialize Connection to Redis 
-const redis = await connect({hostname: hostname, port: port});
+export class Deris {
 
-class Deris {
+    /* The following Redis configuration is required 
+    and is passed at the constructor */
 
+    hostname:string; // ReJSON installed Redis instance 
+    port:number; // Redis host port number (is required) 
+    password:string | null; // optional
 
-    constructor() {
+    /*Connection is null by default unless explicitly invoked by:
 
+        instance.init();
+    */
+    redis:any = null;
+
+    constructor(hostname:string, port:number, password:string | null = null) {
+        this.hostname = hostname;
+        this.port = port;
+        this.password = password;
+
+    }
+
+    async init(){
+
+        this.redis = await connect({hostname: this.hostname,port: this.port});
+        console.log(`✅ - Connection to Redis host ${this.hostname} established.`)
     }
  
     async save(payload: string, id: null | string = null ) {
@@ -25,7 +39,7 @@ class Deris {
         let method:string = "data.save"
         payload = JSON.parse(payload);
         
-        let replies = await redis.executor.exec("JSON.SET", id, ".", JSON.stringify(payload));
+        let replies = await this.redis.executor.exec("JSON.SET", id, ".", JSON.stringify(payload));
         console.log(`db ${method} response: `, replies);
         console.log(`Document ${id} saved`);
 
@@ -39,10 +53,10 @@ class Deris {
         if(!path){
             path = '.'
         }
-        let replies = await redis.executor.exec("JSON.GET", id, path );
+        let replies = await this.redis.executor.exec("JSON.GET", id, path );
 
         let dt = replies[1];
-        console.log(`db ${method} @ ${id} Response: `);
+        console.log(`db ${method} @ ${id}`);
         let data = dt?.toString();
         // console.log(data);
 
@@ -61,7 +75,7 @@ class Deris {
             p = ".";
         }
 
-        let replies = await redis.executor.exec("JSON.SET", id, p, payload );
+        let replies = await this.redis.executor.exec("JSON.SET", id, p, payload );
         
         console.log(`db ${method} response: `, replies);
         return id;
@@ -76,7 +90,7 @@ class Deris {
         }
         let method:string = "data.update";
         
-        let replies = await redis.executor.exec("JSON.DEL", id, p);
+        let replies = await this.redis.executor.exec("JSON.DEL", id, p);
         console.log(replies);
         if (replies[1] == 0){
             console.log(`Document ${id} not found`)
@@ -90,4 +104,3 @@ class Deris {
 
 }
 
-export {Deris}
