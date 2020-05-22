@@ -1,5 +1,6 @@
-
-Deno projects and ideas.
+## notice:
+Due to my preferences and extended use of Postgres, I am forking this lib to use Postgres. 
+I will continue making changes, but only when I can.
 
 # deris
 A ReJSON (Redis JSON) CRUD wrapper in for Deno (in Deno)
