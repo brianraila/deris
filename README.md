@@ -10,23 +10,13 @@ A ReJSON (Redis JSON) CRUD wrapper in for Deno (in Deno)
 
 `
 
-//An example URL Shortener built in:
-        // 1. Deno 
-        // 2. Deris 
-
-/* If you cloned this repo */
-// import {Deris} from "../mod.ts"
-
 
 import {Deris} from "https://raw.githubusercontent.com/brianraila/deris/master/mod.ts";
 import { v4 } from "https://deno.land/std/uuid/mod.ts";
 
-
 const db = new Deris("localhost", 8890 );
 
 await db.init();
-
-
 
 let shortenURL = async function(longURL: string){
     
